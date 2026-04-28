@@ -1,5 +1,4 @@
 package com.example.escola_api.controller;
-
 import com.example.escola_api.model.Aluno;
 import com.example.escola_api.repository.AlunoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +17,18 @@ public class AlunoController {
         return repo.findAll();
     }
 
+    @GetMapping("/{id}")
+    public Aluno buscar(@PathVariable Long id) {
+        return repo.findById(id).orElse(null);
+    }
+
     @PostMapping
     public Aluno salvar(@RequestBody Aluno aluno) {
         return repo.save(aluno);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deletar(@PathVariable Long id) {
+        repo.deleteById(id);
     }
 }
