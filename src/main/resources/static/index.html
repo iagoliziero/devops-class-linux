@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Escola API</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; }
+    h1 { color: #333; }
+    input { padding: 8px; margin: 5px; width: 200px; }
+    button { padding: 8px 16px; background: #007bff; color: white; border: none; cursor: pointer; border-radius: 4px; }
+    button:hover { background: #0056b3; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+    th { background: #007bff; color: white; }
+    tr:nth-child(even) { background: #f2f2f2; }
+  </style>
+</head>
+<body>
+  <h1>🎓 Escola API</h1>
+
+  <h2>Cadastrar Aluno</h2>
+  <input id="nome" placeholder="Nome" />
+  <input id="email" placeholder="Email" />
+  <input id="curso" placeholder="Curso" />
+  <button onclick="cadastrar()">Cadastrar</button>
+
+  <h2>Lista de Alunos</h2>
+  <button onclick="listar()">Atualizar Lista</button>
+  <table>
+    <thead>
+      <tr><th>ID</th><th>Nome</th><th>Email</th><th>Curso</th><th>Ação</th></tr>
+    </thead>
+    <tbody id="tabela"></tbody>
+  </table>
+
+  <script>
+    const API = 'http://158.158.54.79:8080/alunos';
+
+    async function listar() {
+      const res = await fetch(API);
+      const alunos = await res.json();
+      const tabela = document.getElementById('tabela');
+      tabela.innerHTML = '';
+      alunos.forEach(a => {
+        tabela.innerHTML += `<tr>
+          <td>${a.id}</td>
+          <td>${a.nome}</td>
+          <td>${a.email}</td>
+          <td>${a.curso}</td>
+          <td><button onclick="deletar(${a.id})">Deletar</button></td>
+        </tr>`;
+      });
+    }
+
+    async function cadastrar() {
+      const nome = document.getElementById('nome').value;
+      const email = document.getElementById('email').value;
+      const curso = document.getElementById('curso').value;
+      await fetch(API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nome, email, curso })
+      });
+      listar();
+    }
+
+    async function deletar(id) {
+      await fetch(`${API}/${id}`, { method: 'DELETE' });
+      listar();
+    }
+
+    listar();
+  </script>
+</body>
+</html>
